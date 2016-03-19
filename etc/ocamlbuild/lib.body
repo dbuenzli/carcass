@@ -1,0 +1,9 @@
+doc
+"OCaml library"
+"OCaml library made of a single module. A .mli/.ml file pair and an
+ ocamlbuild .mllib file to compile it."
+
+var NAME "the library and module name"
+
+bind . ocaml/mod.body
+bind $(NAME,uncapitalize).mllib ocamlbuild/lib/_lib.mllib

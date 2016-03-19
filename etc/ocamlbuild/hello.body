@@ -1,0 +1,11 @@
+doc
+"OCaml hello world program"
+"OCaml hello world program compiled with ocamlbuild."
+
+var NAME "the name of the program"
+
+bind .merlin        ocamlbuild/hello/_merlin
+bind .ocp-indent    ocaml/ocp-indent
+bind _tags          ocamlbuild/hello/_tags
+bind build          ocamlbuild/hello/_build
+bind src/$(NAME,uncapitalize).ml ocamlbuild/hello/_hello.ml

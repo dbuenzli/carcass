@@ -1,0 +1,7 @@
+doc "OCaml module"
+    "OCaml module, a .mli/.ml file pair."
+
+var NAME "the module name"
+
+bind $(NAME,uncapitalize).ml   ocaml/src
+bind $(NAME,uncapitalize).mli  ocaml/src

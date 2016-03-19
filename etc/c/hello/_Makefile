@@ -1,0 +1,36 @@
+# Compiles all the sources in src/ to a binary executable.
+
+BDIR := _build
+SRC_DIR := src
+BIN_NAME := $(NAME,lowercase)
+BIN_OBJS := $$(patsubst $$(SRC_DIR)/%.c,$$(BDIR)/%.o,$$(wildcard $$(SRC_DIR)/*.c))
+BIN := $$(BDIR)/$$(BIN_NAME)
+
+# C compiler
+
+CC = cc
+CINCS := -I $$(SRC_DIR)
+CDEBUG := -g
+CDEPEND := -MD -MP
+CFLAGS := $$(CINCS) $$(CDEPEND) $$(CDEBUG) -Wall
+LDFLAGS :=
+
+# Build rules
+
+RM = rm
+mk_bdir := $$(shell mkdir -p $$(BDIR))
+
+all: $$(BIN)
+
+clean:
+	$$(RM) -rf $$(BDIR)
+	$$(RM) -f $$(BIN_NAME)
+
+$$(BIN): $$(BIN_OBJS)
+	$$(CC) -o $$@ $$^ $$(LDFLAGS)
+	ln -s -f $$(BIN) $$(BIN_NAME)
+
+$$(BDIR)/%.o: $$(SRC_DIR)/%.c
+	$$(CC) $$(CFLAGS) -c -o $$@ $$<
+
+include $$(wildcard $$(BDIR)/*.d)

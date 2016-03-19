@@ -1,0 +1,10 @@
+doc
+"HTML page with JavaScript"
+"HTML page linked with an empty CSS and JavaScript file."
+
+var NAME  "the base name for the HTML, CSS and JavaScript files"
+var TITLE "the HTML page title"
+
+bind $(NAME).html www/_page.html
+bind $(NAME).css  www/css
+bind $(NAME).js   www/_page.js

@@ -1,0 +1,8 @@
+doc
+"C hello world program"
+"C hello world program compiled with make"
+
+var NAME "the name of the program"
+
+bind Makefile c/hello/_Makefile
+bind src/$(NAME,uncapitalize).c c/hello/_hello.c

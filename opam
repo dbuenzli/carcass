@@ -1,0 +1,35 @@
+opam-version: "1.2"
+maintainer: "Daniel Bünzli <daniel.buenzl i@erratique.ch>"
+authors: ["Daniel Bünzli <daniel.buenzl i@erratique.ch>"]
+homepage: "http://erratique.ch/software/carcass"
+doc: "http://erratique.ch/software/carcass"
+dev-repo: "http://erratique.ch/repos/carcass.git"
+bug-reports: "https://github.com/dbuenzli/carcass/issues"
+tags: [ "dev" "text" "org:erratique" ]
+license: "ISC"
+available: [ ocaml-version >= "4.01.0"]
+depends: [
+  "ocamlfind" {build}
+  "ocamlbuild" {build}
+  "topkg" {build}
+  "base-unix"
+  "uchar"
+  "result"
+  "rresult"
+  "logs"
+  "astring"
+  "uutf"
+  "fmt"
+  "fpath"
+  "bos"
+  "cmdliner"
+ ]
+build:
+[[ "ocaml" "pkg/pkg.ml" "build"
+           "human" "false"
+           "etc-dir" "%{carcass:etc}%" ]]
+
+post-messages:
+[
+  "Run `carcass setup` to setup you personal information." {success}
+]

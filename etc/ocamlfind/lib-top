@@ -1,0 +1,9 @@
+package "top" (
+  description = "$(NAME) toplevel support"
+  version = "%%VERSION%%"
+  requires = "$(NAME,uncapitalize)"
+  archive(byte) = "$(NAME,uncapitalize)_top.cma"
+  archive(native) = "$(NAME,uncapitalize)_top.cmxa"
+  plugin(byte) = "$(NAME,uncapitalize)_top.cma"
+  plugin(native) = "$(NAME,uncapitalize)_top.cmxs"
+)

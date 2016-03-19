@@ -1,0 +1,7 @@
+description = "$(PKG_TAGLINE)"
+version = "%%VERSION%%"
+
+archive(byte) = "$(NAME,uncapitalize).cma"
+archive(native) = "$(NAME,uncapitalize).cmxa"
+plugin(byte) = "$(NAME,uncapitalize).cma"
+plugin(native) = "$(NAME,uncapitalize).cmxs"

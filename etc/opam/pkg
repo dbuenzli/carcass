@@ -1,0 +1,21 @@
+opam-version: "1.2"
+maintainer: "$(AUTHOR_NAME) <$(AUTHOR_EMAIL)>"
+authors: ["$(AUTHOR_NAME) <$(AUTHOR_EMAIL)>"]
+homepage: "$(PKG_HOMEPAGE)"
+doc: "$(PKG_DOC)"
+license: "$(LICENSE)"
+dev-repo: "$(PKG_REPO)"
+bug-reports: "$(PKG_ISSUES)"
+tags: []
+available: [ ocaml-version >= "4.01.0"]
+depends: [
+  "ocamlfind" {build}
+  "ocamlbuild" {build}
+  "topkg" {build}
+]
+depopts: []
+build:
+[[ "ocaml" "pkg/pkg.ml" "build"
+           "human" "false"
+           "native" "%{ocaml-native}%"
+           "native-dynlink" "%{ocaml-native-dynlink}%" ]]

@@ -1,0 +1,18 @@
+description = "Define and generate file and directory carcasses"
+version = "%%VERSION%%"
+
+requires = "unix uchar result rresult astring uutf fmt fpath bos"
+archive(byte) = "carcass.cma"
+archive(native) = "carcass.cmxa"
+plugin(byte) = "carcass.cma"
+plugin(native) = "carcass.cmxs"
+
+package "cli" (
+  description = "Cmdliner support for Carcass"
+  version = "%%VERSION%%"
+  requires = "cmdliner carcass"
+  archive(byte) = "carcass_cli.cma"
+  archive(native) = "carcass.cmxa"
+  plugin(byte) = "carcass.cma"
+  plugin(native) = "carcass.cmxs"
+)

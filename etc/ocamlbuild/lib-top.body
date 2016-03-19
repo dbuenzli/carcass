@@ -1,0 +1,14 @@
+doc
+"OCaml toplevel support library"
+"OCaml toplevel support library loading toplevel directives for another
+ library. The directives are in the source file
+ $(NAME)_top_init.ml; it needs to be installed in the same directory
+ as the support library.
+
+ The bone ocamlfind/lib-top generates a META file fragment for this library."
+
+var NAME "the library name to support in the toplevel."
+
+bind $(NAME,uncapitalize)_top_init.ml  ocaml/src
+bind $(NAME,uncapitalize)_top.ml       ocamlbuild/lib-top/_mod_top.ml
+bind $(NAME,uncapitalize)_top.mllib    ocamlbuild/lib-top/_mod_top.mllib

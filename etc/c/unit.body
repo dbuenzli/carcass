@@ -1,0 +1,7 @@
+doc "C compilation unit"
+    "C compilation unit, a .h/.c file pair."
+
+var NAME "the compilation unit name"
+
+bind $(NAME).h c/unit/_unit.h
+bind $(NAME).c c/unit/_unit.c

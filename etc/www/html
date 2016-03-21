@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-$(SRC_HEADER)
+$(SRC_HEADER,indent("   "))
   -->
 <html lang="en">
 <head>
@@ -14,5 +14,5 @@ $(SRC_HEADER)
 </body>
 </html>
 <!--
-$(SRC_FOOTER)
+$(SRC_FOOTER,indent("   "))
   -->

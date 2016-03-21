@@ -146,10 +146,8 @@ module Pat : sig
   (** {1 Variable reference transforms} *)
 
   (** The type for variable reference transforms. *)
-  type transform = Uppercase | Lowercase | Capitalize | Uncapitalize
-
-  val transform_of_string : string -> transform option
-  (** [transform_of_string s] parses a transform from [s]. *)
+  type transform =
+  | Uppercase | Lowercase | Capitalize | Uncapitalize | Indent of string
 
   val transform_to_string : transform -> string
   (** [transform_of_string t] parses a transform from [s]. *)

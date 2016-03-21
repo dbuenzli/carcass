@@ -261,12 +261,14 @@ $(i,bslash) ::= U+005C
         definition according to US-ASCII case maps.");
     `I ("$$$$(VAR,uppercase)", "Uppercases the letters of VAR's
         definition according to US-ASCII case maps.");
+    `I ("$$$$(VAR,indent(ATOM))", "Prefixes each line of VAR's definition with
+         the string ATOM.");
     `P "In context where variable references need to be recognized they
         are according to the following grammar.";
     `Pre "\
 \      $(i,ref) ::= $(i,dollar) $(i,lpar) $(i,refc) $(i,rpar)
      $(i,refc) ::= $(i,id) | $(i,id) $(i,comma) $(i,transform)
-$(i,transform) ::= $(i,id) (restricted, see above)
+$(i,transform) ::= $(i,id) [ $(i,lpar) $(i,atom) $(i,rpar) ]
    $(i,dollar) ::= U+0024
     $(i,comma) ::= U+002C
      $(i,lpar) ::= U+0028

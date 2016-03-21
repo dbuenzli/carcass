@@ -191,6 +191,7 @@ module Lexer : sig
 
   val skip_white : t -> unit
   val lex_while : t -> (Uutf.uchar -> bool) -> string
+  val lex_uchar : t -> Uutf.uchar -> Error.expected -> unit
   val lex_id : t -> string * Loc.t
   val lex_id_or_eoi : t -> (string * Loc.t) option
   val lex_keyword : Error.expected list -> t -> (string * Loc.t) option
@@ -282,6 +283,13 @@ end = struct
     (0x0061 <= u && u <= 0x007A) || (* a .. z *)
     (0x005F = u)                    (* _ *)
 
+  let lex_uchar l u exp = match (skip_white l; peek l) with
+  | `Uchar u' when u' = u -> ()
+  | `Uchar u' ->
+      Error.(parse (Unexpected (`Uchar (uchar u), [exp])) (peek_loc l))
+  | `End ->
+      Error.(parse (Unexpected (`Eoi, [exp])) (peek_loc l))
+
   let lex_id_or_eoi l = match (skip_white l; peek l) with
   | `Uchar u when is_id_char u ->
       let start = peek_pos l in
@@ -345,7 +353,8 @@ module Pat = struct
 
   (* Variable reference transforms *)
 
-  type transform = Uppercase | Lowercase | Capitalize | Uncapitalize
+  type transform =
+    | Uppercase | Lowercase | Capitalize | Uncapitalize | Indent of string
 
   let transform t s = match t with
   | None -> s
@@ -353,19 +362,16 @@ module Pat = struct
   | Some Lowercase -> String.Ascii.lowercase s
   | Some Capitalize -> String.Ascii.capitalize s
   | Some Uncapitalize -> String.Ascii.uncapitalize s
-
-  let transform_of_string = function
-  | "uppercase" -> Some Uppercase
-  | "lowercase" -> Some Lowercase
-  | "capitalize" -> Some Capitalize
-  | "uncapitalize" -> Some Uncapitalize
-  | _ -> None
+  | Some Indent prefix ->
+      let lines = String.cuts ~sep:"\n" s in
+      prefix ^ (String.concat ~sep:("\n" ^ prefix) lines)
 
   let transform_to_string = function
   | Uppercase -> "uppercase"
   | Lowercase -> "lowercase"
   | Capitalize -> "capitalize"
   | Uncapitalize -> "uncapitalize"
+  | Indent prefix -> strf "indent(%a)" String.dump prefix
 
   let pp_transform = Fmt.of_to_string transform_to_string
 
@@ -376,11 +382,22 @@ module Pat = struct
 
   (* Parsing *)
 
+  let parse_transform_arg l =
+    Lexer.lex_uchar l 0x0028 `Lpar;
+    let atom, _ = Lexer.(next l; skip_white l; lex_atom l) in
+    Lexer.lex_uchar l 0x0029 `Rpar;
+    Lexer.next l;
+    atom
+
   let parse_transform l =
     let tr, loc = Lexer.lex_id l in
-    match transform_of_string tr with
-    | Some tr -> tr
-    | None -> Error.(parse (Illegal_variable_transform tr) loc)
+    match tr with
+    | "uppercase" -> Uppercase
+    | "lowercase" -> Lowercase
+    | "capitalize" -> Capitalize
+    | "uncapitalize" -> Uncapitalize
+    | "indent" -> Indent (parse_transform_arg l)
+    | _ -> Error.(parse (Illegal_variable_transform tr) loc)
 
   let parse_variable_reference l start = (* $( already eaten *)
     let id = String.Ascii.uppercase @@ fst (Lexer.lex_id l) in

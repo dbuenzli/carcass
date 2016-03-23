@@ -1,6 +1,6 @@
 description = "$(PKG_SYNOPSIS)"
 version = "%%VERSION%%"
-
+requires = ""
 archive(byte) = "$(NAME,uncapitalize).cma"
 archive(native) = "$(NAME,uncapitalize).cmxa"
 plugin(byte) = "$(NAME,uncapitalize).cma"

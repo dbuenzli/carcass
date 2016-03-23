@@ -26,8 +26,8 @@ depends: [
  ]
 build:
 [[ "ocaml" "pkg/pkg.ml" "build"
-           "human" "false"
-           "etc-dir" "%{carcass:etc}%" ]]
+           "--installer" "true"
+           "--etc-dir" "%{carcass:etc}%" ]]
 
 post-messages:
 [

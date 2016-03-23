@@ -42,8 +42,8 @@ let see_also_main_lookup_man =
 
 let path_arg =
   let parse s = match Fpath.of_string s with
-  | None -> `Error (strf "%a: not a path" String.dump s)
-  | Some s -> `Ok s
+  | Error _ -> `Error (strf "%a: not a path" String.dump s)
+  | Ok s -> `Ok s
   in
   parse, Fpath.pp
 

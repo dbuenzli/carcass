@@ -14,8 +14,8 @@ let pp_var_id = Fmt.(quote ~mark:"'" string)
 
 let path_arg =
   let parse s = match Fpath.of_string s with
-  | None -> `Error (strf "%a: not a path" String.dump s)
-  | Some s -> `Ok s
+  | Error (`Msg m) -> `Error m
+  | Ok p -> `Ok p
   in
   parse, Fpath.pp
 

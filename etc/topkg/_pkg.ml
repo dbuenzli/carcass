@@ -4,9 +4,5 @@
 open Topkg
 
 let () =
-  let builder = Pkg.builder (`OCamlbuild []) in
-  Pkg.describe "$(NAME,uncapitalize)" ~builder [
-    Pkg.lib "pkg/META";
-    Pkg.lib ~exts:Exts.module_library "src/$(NAME,uncapitalize)";
-    Pkg.doc "README.md";
-    Pkg.doc "CHANGES.md"; ]
+  Pkg.describe "$(NAME,uncapitalize)" @@ fun c ->
+  Ok [ Pkg.mllib "src/$(NAME,uncapitalize).mllib" ]

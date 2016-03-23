@@ -16,6 +16,4 @@ depends: [
 depopts: []
 build:
 [[ "ocaml" "pkg/pkg.ml" "build"
-           "human" "false"
-           "native" "%{ocaml-native}%"
-           "native-dynlink" "%{ocaml-native-dynlink}%" ]]
+           "installer" "true" ]]

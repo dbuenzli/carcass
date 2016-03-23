@@ -976,8 +976,8 @@ module Body = struct
         let pat = Pat.parse l in
         let atom, loc = Lexer.lex_atom l in
         match Fpath.of_string atom with
-        | None -> Error.(parse (Illegal_binding_id atom) loc)
-        | Some id ->
+        | Error _ -> Error.(parse (Illegal_binding_id atom) loc)
+        | Ok id ->
             if Fpath.(is_current_dir ~prefix:true id || is_abs id)
             then Error.(parse (Illegal_binding_id atom) loc)
             else loop ((pat, (id, loc)) :: acc) (Lexer.lex_keyword exp l)
@@ -1014,8 +1014,8 @@ module Body = struct
             Error.(eval e (List.(rev (rev_append locs (rev t)))))
         | Ok (p, ploc) ->
             match Fpath.of_string p with
-            | None -> Error.(eval (Bound_path (p, `Illegal)) (ploc :: locs))
-            | Some p ->
+            | Error _ -> Error.(eval (Bound_path (p, `Illegal)) (ploc :: locs))
+            | Ok p ->
                 let p' = Fpath.(root // p) in
                 if (Fpath.is_rooted ~root p') then p' else
                 let p' = Fpath.to_string p' in

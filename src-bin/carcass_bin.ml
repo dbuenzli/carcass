@@ -48,9 +48,9 @@ let main =
   (t, info)
 
 let main () = match Term.eval_choice main cmds with
-| `Error _ -> exit 1
+| `Error _ -> exit 3
 | `Ok ret when ret <> 0 -> exit ret
-| _ -> if Logs.err_count () > 0 then exit 1 else exit 0
+| _ -> if Logs.err_count () > 0 then exit 3 else exit 0
 
 let () = main ()
 

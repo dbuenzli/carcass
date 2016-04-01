@@ -92,7 +92,7 @@ let define_vars ?ppf ?(var_docs = String.Map.empty) ~no_prompt =
     end
 
 let user_wants_overwrite p =
-  Carcass.Ask.bool ~default:false "File %a exists, overwrite?" Fpath.pp p
+  Carcass.Ask.bool ~default:false "File %a exists, overwrite ?" Fpath.pp p
 
 (* Basic setup for every command *)
 

@@ -1,4 +1,4 @@
-description = "$(PKG_TAGLINE)"
+description = "$(PKG_SYNOPSIS)"
 version = "%%VERSION%%"
 
 archive(byte) = "$(NAME,uncapitalize).cma"

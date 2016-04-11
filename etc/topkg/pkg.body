@@ -9,7 +9,7 @@ var NAME "the package and library name"
 var LICENSE "the package's license identifier (SPDX)"
 var LICENCE_TERMS "the package's license terms"
 
-var PKG_TAGLINE   "the package's catchy tag line"
+var PKG_SYNOPSIS  "the package's one-line synopsis"
 var PKG_HOMEPAGE  "the package's home page URI"
 var PKG_DOC       "the package's documentation URI"
 var PKG_REPO      "the package's repository URI"

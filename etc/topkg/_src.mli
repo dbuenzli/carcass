@@ -2,7 +2,7 @@
 $(SRC_HEADER,indent("   "))
   ---------------------------------------------------------------------------*)
 
-(** $(PKG_TAGLINE)
+(** $(PKG_SYNOPSIS)
 
     {e %%VERSION%% — {{:%%PKG_HOMEPAGE%% }homepage}} *)
 

@@ -261,8 +261,9 @@ $(i,bslash) ::= U+005C
         definition according to US-ASCII case maps.");
     `I ("$$$$(VAR,uppercase)", "Uppercases the letters of VAR's
         definition according to US-ASCII case maps.");
-    `I ("$$$$(VAR,indent(ATOM))", "Prefixes each line of VAR's definition with
-         the string ATOM.");
+    `I ("$$$$(VAR,indent(ATOM))", "Prefixes each line of VAR's
+        definition with the string ATOM. Lines that result in whitespace
+        only are collapsed to an empty line.");
     `P "In context where variable references need to be recognized they
         are according to the following grammar.";
     `Pre "\

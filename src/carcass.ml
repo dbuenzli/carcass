@@ -364,7 +364,11 @@ module Pat = struct
   | Some Uncapitalize -> String.Ascii.uncapitalize s
   | Some Indent prefix ->
       let lines = String.cuts ~sep:"\n" s in
-      prefix ^ (String.concat ~sep:("\n" ^ prefix) lines)
+      let add_prefix l =
+        let p = prefix ^ l in
+        if String.for_all Char.Ascii.is_white p then "" else p
+      in
+      String.concat ~sep:"\n" (List.rev @@ List.rev_map add_prefix lines)
 
   let transform_to_string = function
   | Uppercase -> "uppercase"

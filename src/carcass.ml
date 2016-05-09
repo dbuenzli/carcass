@@ -126,8 +126,8 @@ module Error = struct
     Fmt.pf ppf "@[<v>@[syntax error, %a@]@,%a@]"
       pp_parse_err e Loc.pp loc
 
-  exception Parse of parse
-  let parse e l = raise (Parse (`Carcass_parse (e, l)))
+  exception Parse_exn of parse
+  let parse e l = raise (Parse_exn (`Carcass_parse (e, l)))
 
   (* Evaluation errors *)
 
@@ -538,7 +538,7 @@ module Pat = struct
       let stop = Lexer.peek_pos l in
       let loc = src, (start, stop) in
       Ok (pat, loc)
-    with Error.Parse (`Carcass_parse _ as e) -> Error e
+    with Error.Parse_exn (`Carcass_parse _ as e) -> Error e
 
   let pp ?flesh = Fmt.of_to_string (to_string ?flesh)
 
@@ -833,7 +833,7 @@ module Flesh = struct
         let loc = src, (def_start, def_end) in
         loop l (String.Map.add id (pat, loc) acc)
     in
-    try loop l acc with Error.Parse (`Carcass_parse _ as e) -> Error e
+    try loop l acc with Error.Parse_exn (`Carcass_parse _ as e) -> Error e
 
   let of_input ?(init = builtins) ~src i = _of_input ~src builtins i
 
@@ -992,7 +992,7 @@ module Body = struct
       let var_docs, peek = parse_var_docs l in
       let bindings = parse_bindings l peek in
       Ok { id; doc; var_docs; bindings }
-    with Error.Parse (`Carcass_parse _ as e) -> Error e
+    with Error.Parse_exn (`Carcass_parse _ as e) -> Error e
 
   let of_path p id =
     OS.File.read p >>= fun bytes ->

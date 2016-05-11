@@ -3,7 +3,10 @@
 #require "topkg"
 open Topkg
 
-let etc_dir = Conf.(key "etc-dir" fpath ~absent:(default "etc"))
+let etc_dir =
+  let doc = "Use $(docv) as the etc install directory" in
+  Conf.(key "etc-dir" fpath ~absent:"etc" ~doc)
+
 let etc_config c = match Conf.build_context c with
 | `Dev -> Ok ()
 | `Pin | `Distrib ->

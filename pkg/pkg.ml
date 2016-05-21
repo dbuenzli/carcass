@@ -35,5 +35,5 @@ let () =
   [
     Pkg.mllib ~api:["Carcass"] "src/carcass.mllib";
     Pkg.mllib ~api:["Carcass_cli"] "src/carcass_cli.mllib";
-    Pkg.bin ~auto:true "src-bin/carcass_bin" ~dst:"carcass";
+    Pkg.bin "src-bin/carcass_bin" ~dst:"carcass";
   ] @ etc_distrib_files

@@ -26,7 +26,7 @@ depends: [
  ]
 build:
 [[ "ocaml" "pkg/pkg.ml" "build"
-           "--installer" "true"
+           "--pinned" "%{pinned}%"
            "--etc-dir" "%{carcass:etc}%" ]]
 
 post-messages:

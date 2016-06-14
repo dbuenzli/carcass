@@ -2,8 +2,8 @@ Carcass — Define and generate file and directory carcasses
 -------------------------------------------------------------------------------
 %%VERSION%%
 
-> *carcass* /ˈkɑːkəs/ the structural framework of a building, ship, or piece of
-> furniture — [*Oxford Dictionary of English*](def)
+> *carcass* /ˈkɑːkəs/ the structural framework of a building, ship, or piece
+> of furniture — [*Oxford Dictionary of English*][def]
 
 Carcass is a command line tool and OCaml library to define and generate
 file and directory structures. 
@@ -17,7 +17,7 @@ Carcass is distributed under the ISC license.
 Home page: http://erratique.ch/software/carcass  
 Contact: Daniel Bünzli `<daniel.buenzl i@erratique.ch>`
 
-[def]:(http://www.oxforddictionaries.com/definition/english/carcass)
+[def]: http://www.oxforddictionaries.com/definition/english/carcass
 
 ## Installation
 

@@ -10,13 +10,11 @@ OCAMLBUILD=$${OCAMLBUILD:="ocamlbuild -use-ocamlfind -classic-display \
 action ()
 {
     case $$1 in
-        default)    action lib-native ;;
-        lib-byte)   $$OCAMLBUILD $(NAME,uncapitalize).cma ;;
-        lib-native) $$OCAMLBUILD $(NAME,uncapitalize).cmxa ;;
-        test|tests) $$OCAMLBUILD test/tests.otarget ;;
+        default)    topkg build ;;
+        test|tests) topkg build && topkg test ;;
         doc)        shift; topkg doc --dev $$* ;;
         api-doc)    shift; topkg doc $$* ;;
-        clean)      $$OCAMLBUILD -clean ;;
+        clean)      topkg clean ;;
         *)          $$OCAMLBUILD $$* ;;
     esac
 }

@@ -5,4 +5,5 @@ open Topkg
 
 let () =
   Pkg.describe "$(NAME,uncapitalize)" @@ fun c ->
-  Ok [ Pkg.mllib "src/$(NAME,uncapitalize).mllib" ]
+  Ok [ Pkg.mllib "src/$(NAME,uncapitalize).mllib";
+       Pkg.test "test/test"; ]

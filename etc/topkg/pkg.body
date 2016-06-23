@@ -30,7 +30,6 @@ bind src/$(NAME,lowercase).mli   topkg/_src.mli
 bind src/$(NAME,lowercase).ml    ocaml/src
 bind src/$(NAME,lowercase).mllib ocamlbuild/lib/_lib.mllib
 bind test/test.ml        ocaml/src
-bind test/tests.itarget  topkg/_tests.itarget
 bind doc/api.odocl       topkg/_doc.odocl
 bind doc/dev.odocl       topkg/_doc.odocl
 bind doc/style.css       topkg/_style.css

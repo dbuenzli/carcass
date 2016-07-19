@@ -24,7 +24,6 @@ bind README.md           topkg/_README.md
 bind CHANGES.md          topkg/_CHANGES.md
 bind LICENSE.md          topkg/LICENSE.md
 bind _tags               topkg/_tags
-bind build               topkg/_build
 bind src                 ocamlbuild/lib.body
 bind src/$(NAME,lowercase).mli   topkg/_src.mli
 bind src/$(NAME,lowercase).ml    ocaml/src

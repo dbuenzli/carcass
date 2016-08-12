@@ -22,7 +22,7 @@ bind .merlin             topkg/_merlin
 bind .ocp-indent         ocaml/ocp-indent
 bind README.md           topkg/_README.md
 bind CHANGES.md          topkg/_CHANGES.md
-bind LICENSE.md          topkg/LICENSE.md
+bind LICENSE.md          LICENSE.md
 bind _tags               topkg/_tags
 bind src                 ocamlbuild/lib.body
 bind src/$(NAME,lowercase).mli   topkg/_src.mli

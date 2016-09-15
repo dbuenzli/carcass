@@ -31,5 +31,5 @@ build:
 
 post-messages:
 [
-  "Run `carcass setup` to setup you personal information." {success}
+  "Run `carcass setup` to setup your personal information." {success}
 ]

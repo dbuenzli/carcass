@@ -12,7 +12,7 @@ package "cli" (
   version = "%%VERSION_NUM%%"
   requires = "cmdliner carcass"
   archive(byte) = "carcass_cli.cma"
-  archive(native) = "carcass.cmxa"
-  plugin(byte) = "carcass.cma"
-  plugin(native) = "carcass.cmxs"
+  archive(native) = "carcass_cli.cmxa"
+  plugin(byte) = "carcass_cli.cma"
+  plugin(native) = "carcass_cli.cmxs"
 )

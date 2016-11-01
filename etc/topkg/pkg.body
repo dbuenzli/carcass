@@ -31,7 +31,6 @@ bind src/$(NAME,lowercase).mllib ocamlbuild/lib/_lib.mllib
 bind test/test.ml        ocaml/src
 bind doc/api.odocl       topkg/_doc.odocl
 bind doc/dev.odocl       topkg/_doc.odocl
-bind doc/style.css       topkg/_style.css
 bind pkg/META            ocamlfind/pkg
 bind pkg/pkg.ml          topkg/_pkg.ml
 bind opam                opam/topkg

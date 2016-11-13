@@ -10,14 +10,16 @@ open Bos
 
 let uchar_to_string u =
   let b = Buffer.create 4 in
-  Uutf.Buffer.add_utf_8 b (Uchar.to_int u);
+  Uutf.Buffer.add_utf_8 b u;
   Buffer.contents b
+
+let u_lf = Uchar.of_int 0x000A
+let u_lpar = Uchar.of_int 0x0028
+let u_rpar = Uchar.of_int 0x0029
+let u_dollar = Uchar.of_int 0x0024
 
 let pp_uchar ppf u = Fmt.pf ppf "%s" (uchar_to_string u)
 let pp_ucharq = Fmt.quote ~mark:"'" @@ pp_uchar
-
-let uchar = Uchar.of_int
-let uchars ul = List.map uchar ul
 
 (* Logging *)
 
@@ -182,22 +184,22 @@ module Lexer : sig
   val prev_pos : t -> Loc.pos
   val peek_loc : t -> Loc.t
   val loc : t -> Loc.pos -> Loc.pos -> Loc.t
-  val peek : t -> [`Uchar of Uutf.uchar | `End ]
+  val peek : t -> [`Uchar of Uchar.t | `End ]
   val next : t -> unit
 
-  val add : t -> Uutf.uchar -> unit
+  val add : t -> Uchar.t -> unit
   val add_escape : t -> unit
   val lexeme : t -> string
 
   val skip_white : t -> unit
-  val lex_while : t -> (Uutf.uchar -> bool) -> string
-  val lex_uchar : t -> Uutf.uchar -> Error.expected -> unit
+  val lex_while : t -> (Uchar.t -> bool) -> string
+  val lex_uchar : t -> Uchar.t -> Error.expected -> unit
   val lex_id : t -> string * Loc.t
   val lex_id_or_eoi : t -> (string * Loc.t) option
   val lex_keyword : Error.expected list -> t -> (string * Loc.t) option
 
-  val is_atom_end : Uutf.uchar -> bool
-  val is_quoted_atom_end : Uutf.uchar -> bool
+  val is_atom_end : Uchar.t -> bool
+  val is_quoted_atom_end : Uchar.t -> bool
   val lex_atom : t -> string * Loc.t
 end = struct
 
@@ -207,10 +209,11 @@ end = struct
       buf : Buffer.t;
       mutable prev_line : int;
       mutable prev_col : int;
-      mutable peek : [ `Uchar of Uutf.uchar | `End | `Start ]; }
+      mutable peek : [ `Uchar of Uchar.t | `End | `Start ]; }
 
+  let nln_lf = Some (`ASCII u_lf (* LF *))
   let create ?(nln = true) ~src input =
-    let nln = if nln then Some (`ASCII 0x000A (* LF *)) else None in
+    let nln = if nln then nln_lf else None in
     let d = Uutf.decoder ~encoding:`UTF_8 ?nln input in
     { src; d; buf = Buffer.create 1024;
       prev_line = 0; prev_col = 0;
@@ -235,25 +238,32 @@ end = struct
 
   let add l u = Uutf.Buffer.add_utf_8 l.buf u
   let add_escape l = match peek l with
-  | `Uchar (0x0020 (* space *) | 0x0022 (* quote *) | 0x005C (* \ *) as u) ->
-      next l; add l u
-  | `Uchar 0x006E (* n *)  ->
-      next l; add l 0x000A (* LF *)
-  | `Uchar 0x000A (* LF *) ->
-      let rec loop l = match peek l with              (* skip initial white *)
-      | `Uchar (0x0020 (* space *) | 0x0009 (* tab *)) -> next l; loop l
-      |  _ -> ()
-      in
-      next l; loop l
-  | `Uchar u ->
-      Error.(parse (Illegal_escape (uchar u)) (peek_loc l))
   | `End ->
       Error.(parse (Unexpected (`Eoi, [`Escaped_char])) (peek_loc l))
+  | `Uchar u ->
+      match Uchar.to_int u with
+      | (0x0020 (* space *) | 0x0022 (* quote *) | 0x005C (* \ *)) ->
+          next l; add l u
+      | 0x006E (* n *)  ->
+          next l; add l u_lf
+      | 0x000A (* LF *) ->
+          let rec loop l = match peek l with        (* skip initial white *)
+          | `Uchar u ->
+              begin match Uchar.to_int u with
+              | 0x0020 (* space *) | 0x0009 (* tab *) -> next l; loop l
+              | _ -> ()
+              end
+          |  _ -> ()
+          in
+          next l; loop l
+      | _ ->
+          Error.(parse (Illegal_escape u) (peek_loc l))
 
   let lexeme l =
     let s = Buffer.contents l.buf in Buffer.clear l.buf; s
 
-  let is_white = function
+  let is_sharp u = Uchar.to_int u = 0x0023
+  let is_white u = match Uchar.to_int u with
   | 0x0020 (* sp *) | 0x0009 (* tab *) | 0x000A (* LF *)
   | 0x000B (* vt *) | 0x000C (* FF *) -> true
   | _ -> false
@@ -265,9 +275,9 @@ end = struct
       | _ -> ()
       in
       next l; loop l; skip_white l
-  | `Uchar 0x0023 (* #, comment *) ->
+  | `Uchar u when is_sharp u (* #, comment *) ->
       let rec loop l = match peek l with
-      | `Uchar 0x000A (* LF *) -> ()
+      | `Uchar u when Uchar.equal u u_lf -> ()
       | _ -> next l; loop l
       in
       next l; loop l; next l; skip_white l
@@ -278,15 +288,16 @@ end = struct
   | _ -> lexeme l
 
   let is_id_char u =
+    let u = Uchar.to_int u in
     (0x0030 <= u && u <= 0x0039) || (* 0 .. 9 *)
     (0x0041 <= u && u <= 0x005A) || (* A .. Z *)
     (0x0061 <= u && u <= 0x007A) || (* a .. z *)
     (0x005F = u)                    (* _ *)
 
   let lex_uchar l u exp = match (skip_white l; peek l) with
-  | `Uchar u' when u' = u -> ()
+  | `Uchar u' when Uchar.equal u' u -> ()
   | `Uchar u' ->
-      Error.(parse (Unexpected (`Uchar (uchar u), [exp])) (peek_loc l))
+      Error.(parse (Unexpected (`Uchar u', [exp])) (peek_loc l))
   | `End ->
       Error.(parse (Unexpected (`Eoi, [exp])) (peek_loc l))
 
@@ -296,40 +307,46 @@ end = struct
       let id = lex_while l is_id_char in
       Some (id, loc l start (prev_pos l))
   | `Uchar u ->
-      Error.(parse (Unexpected (`Uchar (uchar u), [`Id])) (peek_loc l))
+      Error.(parse (Unexpected (`Uchar u, [`Id])) (peek_loc l))
   | `End -> None
 
   let lex_id l = match lex_id_or_eoi l with
   | None -> Error.(parse (Unexpected (`Eoi, [`Id])) (peek_loc l))
   | Some id -> id
 
-  let is_keyword_char u = (0x0061 <= u && u <= 0x007A) (* a .. z *)
+  let is_keyword_char u =
+    let u = Uchar.to_int u in
+    (0x0061 <= u && u <= 0x007A) (* a .. z *)
+
   let lex_keyword ks l = match (skip_white l; peek l) with
   | `Uchar u when is_keyword_char u ->
       let start = peek_pos l in
       let keyword = lex_while l is_keyword_char in
       Some (keyword, loc l start (prev_pos l))
-  | `Uchar u -> Error.(parse (Unexpected (`Uchar (uchar u), ks)) (peek_loc l))
+  | `Uchar u -> Error.(parse (Unexpected (`Uchar u, ks)) (peek_loc l))
   | `End -> None
 
   (* Lexing atoms *)
 
-  let is_quoted_atom_end = function 0x0022 (* quote *) -> true | _ -> false
+  let is_quoted_atom_end u = match Uchar.to_int u with
+  | 0x0022 (* quote *) -> true | _ -> false
+
   let is_atom_end = function
   | u when is_white u -> true
-  | 0x0022 (* qmark *) | 0x0023 (* # *) -> true
-  | _ -> false
+  | u ->
+      match Uchar.to_int u with
+      | 0x0022 (* qmark *) | 0x0023 (* # *) -> true
+      | _ -> false
 
   let lex_quoted_atom l =
     let rec loop l start = match peek l with
-    | `Uchar 0x005C (* \ *) ->
-        next l; add_escape l; loop l start
-    | `Uchar 0x0022 (* qmark *) ->
-        next l; lexeme l, loc l start (prev_pos l)
-    | `Uchar u ->
-        add l u; next l; loop l start
     | `End ->
         Error.(parse (Unclosed `Quoted_atom) (loc l start (peek_pos l)))
+    | `Uchar u ->
+        match Uchar.to_int u with
+        | 0x005C (* \ *) -> next l; add_escape l; loop l start
+        | 0x0022 (* qmark *) -> next l; lexeme l, loc l start (prev_pos l)
+        | _  -> add l u; next l; loop l start
     in
     let start = peek_pos l in
     next l; loop l start
@@ -342,9 +359,11 @@ end = struct
     loop l (peek_pos l)
 
   let lex_atom l = match (skip_white l; peek l) with
-  | `Uchar 0x0022 (* qmark *) -> lex_quoted_atom l
-  | `Uchar u -> lex_simple_atom l
   | `End -> Error.(parse (Unexpected (`Eoi, [`Atom])) (peek_loc l))
+  | `Uchar u ->
+      match Uchar.to_int u with
+      | 0x0022 (* qmark *) -> lex_quoted_atom l
+      | _ -> lex_simple_atom l
 end
 
 (* Patterns *)
@@ -387,9 +406,9 @@ module Pat = struct
   (* Parsing *)
 
   let parse_transform_arg l =
-    Lexer.lex_uchar l 0x0028 `Lpar;
+    Lexer.lex_uchar l u_lpar `Lpar;
     let atom, _ = Lexer.(next l; skip_white l; lex_atom l) in
-    Lexer.lex_uchar l 0x0029 `Rpar;
+    Lexer.lex_uchar l u_rpar `Rpar;
     Lexer.next l;
     atom
 
@@ -406,78 +425,99 @@ module Pat = struct
   let parse_variable_reference l start = (* $( already eaten *)
     let id = String.Ascii.uppercase @@ fst (Lexer.lex_id l) in
     match (Lexer.skip_white l; Lexer.peek l) with
-    | `Uchar 0x0029 (* ) *) ->
-        Lexer.next l;
-        Var (id, None), Lexer.(loc l start (prev_pos l))
-    | `Uchar 0x002C (* , *) ->
-        let tr = (Lexer.next l; parse_transform l) in
-        begin match Lexer.peek l with
-        | `Uchar 0x0029 (* ) *) ->
-            Lexer.next l;
-            Var (id, Some tr), Lexer.(loc l start (prev_pos l))
-        | `Uchar u ->
-            Error.(parse (Unexpected (`Uchar (uchar u), [`Rpar]))
-                     (Lexer.peek_loc l))
-        | `End ->
-            Error.(parse (Unclosed (`Var_ref)) (Lexer.peek_loc l))
-        end
-    | `Uchar u ->
-        Error.(parse (Unexpected (`Uchar (uchar u), [`Rpar; `Comma]))
-                 (Lexer.peek_loc l))
     | `End ->
-            Error.(parse (Unclosed `Var_ref) (Lexer.peek_loc l))
+        Error.(parse (Unclosed `Var_ref) (Lexer.peek_loc l))
+    | `Uchar u ->
+        match Uchar.to_int u with
+        | 0x0029 (* ) *) ->
+            Lexer.next l;
+            Var (id, None), Lexer.(loc l start (prev_pos l))
+        | 0x002C (* , *) ->
+            let tr = (Lexer.next l; parse_transform l) in
+            begin match Lexer.peek l with
+            | `Uchar u ->
+                begin match Uchar.to_int u with
+                | 0x0029 (* ) *) ->
+                    Lexer.next l;
+                    Var (id, Some tr), Lexer.(loc l start (prev_pos l))
+                | _ ->
+                    Error.(parse (Unexpected (`Uchar u, [`Rpar]))
+                             (Lexer.peek_loc l))
+                end
+            | `End ->
+                Error.(parse (Unclosed (`Var_ref)) (Lexer.peek_loc l))
+            end
+        | _ ->
+            Error.(parse (Unexpected (`Uchar u, [`Rpar; `Comma]))
+                     (Lexer.peek_loc l))
 
   let parse_pat l ~escapes stop =
     let rec loop l start acc = match Lexer.peek l with
-    | `Uchar 0x0024 (* $ *) ->
-        let vref_start = Lexer.peek_pos l in
-        begin match (Lexer.next l; Lexer.peek l) with
-        | `Uchar 0x0024 (* $ *) -> (* $$ escape *)
-            Lexer.add l 0x0024; Lexer.next l; loop l start acc
-        | `Uchar 0x0028 (* ( *) ->
-            let acc = match Lexer.lexeme l with
-            | "" (* no running litteral *) -> acc
-            | lit -> (Lit lit, Lexer.loc l start vref_start) :: acc
-            in
-            let vref = (Lexer.next l; parse_variable_reference l vref_start) in
-            loop l (Lexer.peek_pos l) (vref :: acc)
-        | `Uchar u ->
-            Error.(parse (Unexpected (`Uchar (uchar u), [`Lpar; `Dollar]))
-                     (Lexer.peek_loc l))
-        | `End ->
-            Error.(parse (Unclosed `Var_ref) (Lexer.peek_loc l))
+    | `Uchar u ->
+        begin match Uchar.to_int u with
+        | 0x0024 (* $ *) ->
+            let vref_start = Lexer.peek_pos l in
+            begin match (Lexer.next l; Lexer.peek l) with
+            | `Uchar u ->
+                begin match Uchar.to_int u with
+                | 0x0024 (* $ *) -> (* $$ escape *)
+                    Lexer.add l u_dollar; Lexer.next l; loop l start acc
+                | 0x0028 (* ( *) ->
+                    let acc = match Lexer.lexeme l with
+                    | "" (* no running litteral *) -> acc
+                    | lit -> (Lit lit, Lexer.loc l start vref_start) :: acc
+                    in
+                    let vref =
+                      (Lexer.next l; parse_variable_reference l vref_start) in
+                    loop l (Lexer.peek_pos l) (vref :: acc)
+                | _ ->
+                    Error.(parse (Unexpected (`Uchar u, [`Lpar; `Dollar]))
+                             (Lexer.peek_loc l))
+                end
+            | `End ->
+                Error.(parse (Unclosed `Var_ref) (Lexer.peek_loc l))
+            end
+
+        | 0x005C (* \ *) when escapes ->
+            Lexer.next l; Lexer.add_escape l; loop l start acc
+        | _ when not (stop u) ->
+            Lexer.add l u; Lexer.next l; loop l start acc
+        | _ ->
+            let lit = Lexer.(Lit (lexeme l), loc l start (prev_pos l)) in
+            List.rev (lit :: acc)
         end
-    | `Uchar 0x005C (* \ *) when escapes ->
-        Lexer.next l; Lexer.add_escape l; loop l start acc
-    | `Uchar u when not (stop u) ->
-        Lexer.add l u; Lexer.next l; loop l start acc
-    | `Uchar _  | `End ->
+    | `End ->
         let lit = Lexer.(Lit (lexeme l), loc l start (prev_pos l)) in
         List.rev (lit :: acc)
     in
     loop l (Lexer.peek_pos l) []
 
   let parse_or_eoi l = match (Lexer.skip_white l; Lexer.peek l) with
-  | `Uchar 0x0022 (* qmark *) ->
-      let start = Lexer.peek_pos l in
-      let pat = (Lexer.next l;
-                 parse_pat l ~escapes:true Lexer.is_quoted_atom_end)
-      in
-      begin match Lexer.peek l with
-      | `Uchar 0x0022 (* qmark *) ->
-          Lexer.next l; Some (pat, Lexer.(loc l start (prev_pos l)))
-      | `Uchar u ->
-          Error.(parse (Unexpected (`Uchar (uchar u), [`Qmark]))
-                   (Lexer.peek_loc l))
-      | `End ->
-          Error.(parse (Unclosed `Quoted_atom)
-                   Lexer.(loc l start (peek_pos l)))
-      end
-  | `Uchar u ->
-      let start = Lexer.peek_pos l in
-      let pat = parse_pat l ~escapes:false Lexer.is_atom_end in
-      Some (pat, Lexer.(loc l start (prev_pos l)))
   | `End -> None
+  | `Uchar u ->
+      match Uchar.to_int u with
+      | 0x0022 (* qmark *) ->
+          let start = Lexer.peek_pos l in
+          let pat = (Lexer.next l;
+                     parse_pat l ~escapes:true Lexer.is_quoted_atom_end)
+          in
+          begin match Lexer.peek l with
+          | `End ->
+              Error.(parse (Unclosed `Quoted_atom)
+                       Lexer.(loc l start (peek_pos l)))
+          | `Uchar u ->
+              begin match Uchar.to_int u with
+              | 0x0022 (* qmark *) ->
+                  Lexer.next l; Some (pat, Lexer.(loc l start (prev_pos l)))
+              | _ ->
+                  Error.(parse (Unexpected (`Uchar u, [`Qmark]))
+                           (Lexer.peek_loc l))
+              end
+          end
+      | _ ->
+          let start = Lexer.peek_pos l in
+          let pat = parse_pat l ~escapes:false Lexer.is_atom_end in
+          Some (pat, Lexer.(loc l start (prev_pos l)))
 
   let parse l = match parse_or_eoi l with
   | None -> Error.(parse (Unexpected (`Eoi, [`Atom])) (Lexer.peek_loc l))

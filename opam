@@ -18,7 +18,7 @@ depends: [
   "rresult"
   "logs"
   "astring"
-  "uutf"
+  "uutf" {>= "1.0.0"}
   "fmt"
   "fpath"
   "bos"

@@ -68,7 +68,7 @@ let root =
 let doc = "output a body (file hierarchy)"
 let man =
   [ `S "DESCRIPTION";
-    `P "The $(b,$(tname)) command evaluates and write the file hierarchy
+    `P "The $(tname) command evaluates and write the file hierarchy
         of the body identified by $(i,BODY_ID) relative to the root
         directory $(i,DEST).";
     `P "See carcass-lookup(5) for more information on the body lookup

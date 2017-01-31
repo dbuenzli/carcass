@@ -22,7 +22,7 @@ depends: [
   "fmt"
   "fpath"
   "bos"
-  "cmdliner"
+  "cmdliner" {>= "1.0.0"}
  ]
 build:
 [[ "ocaml" "pkg/pkg.ml" "build"

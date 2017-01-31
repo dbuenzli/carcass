@@ -174,7 +174,7 @@ let kind =
 let doc = "setup the user ~/.carcass directory"
 let man =
   [ `S "DESCRIPTION";
-    `P "The $(b,$(tname)) command asks the user a few questions to
+    `P "The $(tname) command asks the user a few questions to
         write the personal ~/.carcass/flesh file and copies
         a few sample bones and bodies from carcass's etc directory to
         ~/.carcass.";

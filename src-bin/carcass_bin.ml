@@ -16,20 +16,20 @@ let main _ = `Help (`Pager, None)
 let doc = "define file and directory carcasses"
 let man =
   [ `S "DESCRIPTION";
-    `P "$(b,$(mname)) defines and generates file and directory structures.";
-    `P "The primary aim of $(b,$(mname)) is to help programmers to quickly
+    `P "$(mname) defines and generates file and directory structures.";
+    `P "The primary aim of $(mname) is to help programmers to quickly
         setup new software projects and deal with source and licensing
-        boilerplate during program development. $(b,$(mname)) is agnostic to
+        boilerplate during program development. $(mname) is agnostic to
         content.";
-    `P "Use '$(b,$(mname)) help basics' for understanding the basics.";
+    `P "Use '$(mname) help basics' for understanding the basics.";
     `Noblank;
-    `P "Use '$(b,$(mname)) help lookup' for help about flesh, bone and \
+    `P "Use '$(mname) help lookup' for help about flesh, bone and \
         body lookups.";
     `Noblank;
-    `P "Use '$(b,$(mname)) help syntax' for help about the syntax of
+    `P "Use '$(mname) help syntax' for help about the syntax of
         carcass files.";
     `Noblank;
-    `P "Use '$(b,$(mname)) help $(i,COMMAND)' for information about
+    `P "Use '$(mname) help $(i,COMMAND)' for information about
         $(i,COMMAND).";
   ] @ Cli.common_opts_man @ [
     `S "ENVIRONMENT VARIABLES";

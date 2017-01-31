@@ -62,7 +62,7 @@ let file =
 let doc = "match a file against a bone"
 let man =
   [ `S "DESCRIPTION";
-    `P "The $(b,$(tname)) command matches $(i,FILE) against the structure
+    `P "The $(tname) command matches $(i,FILE) against the structure
         of the bone identified by $(i,BONE_ID).";
     `P "If the file matches, bone variables that start with 'CARCASS_MATCH_'
         are written in flesh syntax with their matched value on standard
@@ -86,7 +86,7 @@ let man =
      carcass bone c/src -F - copyright_year 2010-2016";
   ] @ Cli.common_man @ [
     `S "EXIT STATUS";
-    `P "The $(b,$(tname)) command exits with one of the following values:";
+    `P "The $(tname) command exits with one of the following values:";
     `I ("0", "the file matched the bone.");
     `I ("1", "the file did not match the bone.");
     `I (">1", "an error occured.");

@@ -34,7 +34,7 @@ let basics =
         are arbitrary files located in a carcass directory. Files which
         are detected as text files (i.e. without a null byte) will be parsed
         as UTF-8 encoded file and have variable references of the
-        form $$$$(VAR) substituted with the definitions found in flesh
+        form \\$(VAR) substituted with the definitions found in flesh
         files.");
     `I ("$(i,body) files", "Body files allow to create whole file hierarchies
          out of bones and flesh. They are the files located in a carcass
@@ -163,7 +163,7 @@ let lookup =
     `I ("2. Default carcass directories", "First the .carcass/$(i,BONE_ID)
          from the current working directory up to the root path
          unless the option $(b,--no-dot-dirs) is specified. Then the the
-         ~/.carcass/$(BONE_ID) file unless the option $(b,--no-user-dir) is
+         ~/.carcass/$(i,BONE_ID) file unless the option $(b,--no-user-dir) is
          specified.");
     `S "BODY LOOKUP";
     `P "Body lookup works exactly like bone lookup (see above) except that
@@ -204,7 +204,7 @@ let syntax =
     `S "COMMENTS";
     `P "Outside quoted atoms (see below) a hash
         (#, U+0023) and anything that follows is ignored until the next LF
-        ($(p,\\)$(g,\\e)n, U+000A) and treated as white space.";
+        (\\\\n, U+000A) and treated as white space.";
     `Pre "\
 $(i,comment) ::= $(i,hash) [^$(i,lf)]* $(i,lf)
      $(i,lf) ::= U+000A
@@ -216,18 +216,18 @@ $(i,comment) ::= $(i,hash) [^$(i,lf)]* $(i,lf)
         are respectively an atom and a quoted atom and represent the same
         atom.";
     `P "Quoted atoms can be split across lines using a backslash
-        ($(p,\\)$(g,\\e), U+005C); in this case initial spaces (U+0020) or
+        (\\\\, U+005C); in this case initial spaces (U+0020) or
         tabs (U+0009) on the following line are discarded. Quoted atoms can
         also contain white space and escape sequences which are started
-        by a backslash character ($(p,\\)$(g,\\e), U+005C). The following
+        by a backslash character (\\\\, U+005C). The following
         escape sequences are recognized:";
-    `I ("$(p,\\)$(g,\\e)$(p,\\)$(g,\\e)",
+    `I ("\\\\\\\\",
         "denotes U+005C, a backslash character"); `Noblank;
-    `I ("$(p,\\)$(g,\\e)\"",
+    `I ("\\\\\"",
         "denotes U+0022, a double quote character"); `Noblank;
-    `I ("$(p,\\)$(g,\\e) ",
+    `I ("\\\\ ",
         "denotes U+0020, a space character"); `Noblank;
-    `I ("$(p,\\)$(g,\\e)n",
+    `I ("\\\\n",
         "denotes U+000A, a line feed character");
     `P "Any other character following a backslash is an illegal sequence
         of characters.";
@@ -248,20 +248,20 @@ $(i,bslash) ::= U+005C
     `Pre
       "$(i,id) ::= (U+0030-U+0039 | U+0041-U+005A | U+0061-U+007A | U+005F)+";
     `S "VARIABLE REFERENCES";
-    `P "Variables references are of the form $$$$(VAR) where VAR is a
+    `P "Variables references are of the form \\$(VAR) where VAR is a
         $(b,variable identifier). In the context where variable references \
-        are interpreted a literal $$$$ must always be escaped by $$$$$$$$.";
+        are interpreted a literal \\$ must always be escaped by \\$\\$.";
     `P "Variable references can be followed by an optional transform using
-        the syntax $$$$(VAR,transform). The following transforms are defined.";
-    `I ("$$$$(VAR,uncapitalize)", "Uncapitalizes the first letter of VAR's
+        the syntax \\$(VAR,transform). The following transforms are defined.";
+    `I ("\\$(VAR,uncapitalize)", "Uncapitalizes the first letter of VAR's
         definition according to US-ASCII case maps.");
-    `I ("$$$$(VAR,capitalize)", "Capitalizes the first letter of VAR's
+    `I ("\\$(VAR,capitalize)", "Capitalizes the first letter of VAR's
         definition according to US-ASCII case maps.");
-    `I ("$$$$(VAR,lowercase)", "Lowercases the letters of VAR's
+    `I ("\\$(VAR,lowercase)", "Lowercases the letters of VAR's
         definition according to US-ASCII case maps.");
-    `I ("$$$$(VAR,uppercase)", "Uppercases the letters of VAR's
+    `I ("\\$(VAR,uppercase)", "Uppercases the letters of VAR's
         definition according to US-ASCII case maps.");
-    `I ("$$$$(VAR,indent(ATOM))", "Prefixes each line of VAR's
+    `I ("\\$(VAR,indent(ATOM))", "Prefixes each line of VAR's
         definition with the string ATOM. Lines that result in whitespace
         only are collapsed to an empty line.");
     `P "In context where variable references need to be recognized they
@@ -346,7 +346,7 @@ let topic =
 let doc = "show help about carcass"
 let man =
   [ `S "DESCRIPTION";
-    `P "The $(b,$(tname)) command shows help about carcass.";
+    `P "The $(tname) command shows help about carcass.";
     `P "Use `topics' as $(i,TOPIC) to get a list of topics.";
   ] @ Cli.see_also_main_man
 

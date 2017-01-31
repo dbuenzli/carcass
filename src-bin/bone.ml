@@ -40,7 +40,7 @@ open Cmdliner
 let doc = "output a bone (single file)"
 let man =
   [ `S "DESCRIPTION";
-    `P "The $(b,$(tname)) command evaluates and writes the bone identified by
+    `P "The $(tname) command evaluates and writes the bone identified by
         $(i,BONE_ID) on standard output.";
     `P "See $(mname)-lookup(5) for more information on the bone lookup
         procedure.";

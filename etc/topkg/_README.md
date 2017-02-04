@@ -31,7 +31,7 @@ If you installed $(NAME) with `opam` sample programs are located in
 the directory `opam var $(NAME,uncapitalize):doc`.
 
 In the distribution sample programs and tests are located in the
-[`test`](test) directory of the distribution. They can be built and run
+[`test`](test) directory. They can be built and run
 with:
 
     topkg build --tests true && topkg test 

@@ -73,7 +73,7 @@ module Error = struct
   type unexpected = [ `Uchar of Uchar.t | `Lexeme of string | `Eoi ]
 
   let pp_unexpected ppf = function
-  | `Uchar u -> Fmt.pf ppf "character %a (%a)" pp_ucharq u Uchar.dump u
+  | `Uchar u -> Fmt.pf ppf "character %a (U+%04X)" pp_ucharq u (Uchar.to_int u)
   | `Lexeme l -> Fmt.pf ppf "lexeme %a" Fmt.(quote ~mark:"'" string) l
   | `Eoi -> Fmt.string ppf "end of input"
 
@@ -111,7 +111,7 @@ module Error = struct
   | Illegal_bytes b ->
       Fmt.pf ppf "illegal@ byte@ sequence@ %a" String.dump b
   | Illegal_escape u ->
-      Fmt.pf ppf "illegal@ escape@ character@ (%a)" Uchar.dump u
+      Fmt.pf ppf "illegal@ escape@ character@ (U+%04X)" (Uchar.to_int u)
   | Illegal_variable_transform t ->
       Fmt.pf ppf "illegal@ variable@ transform@ %a" String.dump t
   | Illegal_binding_id id ->

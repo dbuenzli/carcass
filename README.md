@@ -44,7 +44,7 @@ carcass help        # for more help
 ```
 
 The library documentation and API reference is automatically generated
-by `ocamldoc` from the interfacdes. It can be consulted [online][doc]
+by `ocamldoc` from the interfaces. It can be consulted [online][doc]
 and there is a generated version in the `doc` directory of the
 distribution.
 

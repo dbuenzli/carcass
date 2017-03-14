@@ -8,11 +8,15 @@ dev-repo: "$(PKG_REPO)"
 bug-reports: "$(PKG_ISSUES)"
 tags: []
 available: [ ocaml-version >= "4.01.0"]
-depends: [
+depends:
+[
   "ocamlfind" {build}
   "ocamlbuild" {build}
-  "topkg" {build} ]
+  "topkg" {build & >= "0.9.0"}
+]
 depopts: []
-build: [
+build:
+[[
   "ocaml" "pkg/pkg.ml" "build"
-          "--pinned" pinned ]
+          "--dev-pkg" "%{dev}%"
+]]

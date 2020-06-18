@@ -44,6 +44,5 @@ SRC_HEADER
 "\
 Copyright (c) $$(COPYRIGHT_YEAR) $$(COPYRIGHT_AUTHOR). All rights reserved.
 Distributed under the $$(LICENSE) license, see terms at the end of the file.
-%%NAME%% %%VERSION%%"
 
 SRC_FOOTER "$$(LICENSE_TERMS)"

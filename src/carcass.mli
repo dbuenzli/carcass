@@ -4,9 +4,7 @@
    %%NAME%% %%VERSION%%
   ---------------------------------------------------------------------------*)
 
-(** Define file and directory carcasses.
-
-    {e %%VERSION%% - {{:%%PKG_HOMEPAGE%% }homepage}}  *)
+(** Define file and directory carcasses. *)
 
 (** {1 Carcass} *)
 
@@ -241,7 +239,7 @@ module Ask : sig
 
   (** {1 Asking values} *)
 
-  type ('a, 'b) t = ('a, Format.formatter, unit, 'b) Pervasives.format4 -> 'a
+  type ('a, 'b) t = ('a, Format.formatter, unit, 'b) format4 -> 'a
   (** The type for questions formatted according to ['a] and whose result is
       ['b]. *)
 

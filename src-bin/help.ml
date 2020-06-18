@@ -302,7 +302,7 @@ $(i,flesh) ::= ($(i,id) $(i,pat))*
         and a bone or body identifier to bind to the path's content. Note
         that unlike command line tool arguments these identifiers cannot
         be absolute or start with ./, and body identifiers have to be
-        specified with their .body exentension otherwise they are taken
+        specified with their .body extension otherwise they are taken
         to be bone identifiers.";
     `Pre "\
 $(i,body) ::= $(i,doc) $(i,var)* $(i,bind)*

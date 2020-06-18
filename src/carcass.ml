@@ -534,7 +534,7 @@ module Pat = struct
     loop String.Set.empty p
 
   let equal p p' = p = p'
-  let compare p p' = Pervasives.compare p p'
+  let compare p p' = compare p p'
   let to_string ?(flesh = false) (p, _) =
     let b = Buffer.create 255 in
     let add = function
@@ -812,7 +812,7 @@ end
 
 module Ask = struct
 
-  type ('a, 'b) t = ('a, Format.formatter, unit, 'b) Pervasives.format4 -> 'a
+  type ('a, 'b) t = ('a, Format.formatter, unit, 'b) format4 -> 'a
 
   let _value ?(ppf = Fmt.stdout) ~parse fmt =
     let k ppf = try parse (input_line stdin) with

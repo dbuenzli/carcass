@@ -1,5 +1,4 @@
-true : bin_annot, safe_string, package(bytes), package(result), package(uchar)
-
+true : bin_annot, safe_string
 true : package(unix), package(rresult), package(astring), package(uutf), \
        package(fmt), package(fpath), package(logs), package(bos)
 
